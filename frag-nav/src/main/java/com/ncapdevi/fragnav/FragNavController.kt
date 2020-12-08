@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Lifecycle
 import com.ncapdevi.fragnav.tabhistory.*
 import org.json.JSONArray
 import java.lang.ref.WeakReference
@@ -219,7 +220,10 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
                     when {
                         shouldDetachAttachOnSwitch() -> ft.detach(fragment)
                         shouldRemoveAttachOnSwitch() -> ft.remove(fragment)
-                        else -> ft.hide(fragment)
+                        else -> {
+                            ft.hide(fragment)
+                            ft.setMaxLifecycle(fragment, Lifecycle.State.STARTED)
+                        }
                     }
                 } else {
                     mCurrentFrag = fragment
@@ -573,6 +577,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
                 ft.attach(currentFragment)
             } else {
                 ft.show(currentFragment)
+                ft.setMaxLifecycle(currentFragment, Lifecycle.State.RESUMED)
             }
             currentFragment
         } else {
@@ -598,7 +603,10 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
             when {
                 isDetach -> ft.detach(it)
                 isRemove -> ft.remove(it)
-                else -> ft.hide(it)
+                else -> {
+                    ft.hide(it)
+                    ft.setMaxLifecycle(it, Lifecycle.State.STARTED)
+                }
             }
         }
     }
