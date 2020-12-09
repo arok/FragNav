@@ -577,7 +577,9 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
                 ft.attach(currentFragment)
             } else {
                 ft.show(currentFragment)
-                ft.setMaxLifecycle(currentFragment, Lifecycle.State.RESUMED)
+                if (currentFragment.isAdded) {
+                    ft.setMaxLifecycle(currentFragment, Lifecycle.State.RESUMED)
+                }
             }
             currentFragment
         } else {
