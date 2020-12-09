@@ -311,6 +311,35 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
     }
 
     /**
+     * Replace the current fragment
+     *
+     * @param fragment           the fragment to be shown instead
+     * @param transactionOptions Transaction options to be displayed
+     */
+    @JvmOverloads
+    fun pushReplacementFragment(fragment: Fragment, transactionOptions: FragNavTransactionOptions? = defaultTransactionOptions) {
+        if (currentStackIndex != NO_TAB) {
+            val ft = createTransactionWithOptions(transactionOptions, false)
+
+            removeCurrentFragment(ft, isDetach = false, isRemove = true)
+
+            val fragmentTag = generateTag(fragment)
+            fragmentStacksTags[currentStackIndex].apply {
+                if (isNotEmpty()) {
+                    pop()
+                }
+                push(fragmentTag)
+            }
+            ft.addSafe(containerId, fragment, fragmentTag)
+
+            commitTransaction(ft, transactionOptions)
+
+            mCurrentFrag = fragment
+            transactionListener?.onFragmentTransaction(currentFrag, TransactionType.REPLACE)
+        }
+    }
+
+    /**
      * Pop the current fragment from the current tab
      *
      * @param transactionOptions Transaction options to be displayed
@@ -386,7 +415,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
      */
     @JvmOverloads
     fun clearStack(transactionOptions: FragNavTransactionOptions? = defaultTransactionOptions) {
-        clearStack(currentStackIndex,transactionOptions)
+        clearStack(currentStackIndex, transactionOptions)
     }
 
     /**
@@ -408,7 +437,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
         if (fragmentStack.size > 1) {
             //Only animate if we're clearing the current stack
             val shouldAnimate = tabIndex == currentStackIndex
-            val ft = createTransactionWithOptions(transactionOptions,true, shouldAnimate)
+            val ft = createTransactionWithOptions(transactionOptions, true, shouldAnimate)
 
             //Pop all of the fragments on the stack and remove them from the FragmentManager
             while (fragmentStack.size > 1) {
@@ -664,13 +693,13 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
                 if (animated) {
                     if (isPopping) {
                         setCustomAnimations(
-                            transactionOptions.popEnterAnimation,
-                            transactionOptions.popExitAnimation
+                                transactionOptions.popEnterAnimation,
+                                transactionOptions.popExitAnimation
                         )
                     } else {
                         setCustomAnimations(
-                            transactionOptions.enterAnimation,
-                            transactionOptions.exitAnimation
+                                transactionOptions.enterAnimation,
+                                transactionOptions.exitAnimation
                         )
                     }
                 }
@@ -826,7 +855,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
 
         // Restore current fragment
         val tag = savedInstanceState.getString(EXTRA_CURRENT_FRAGMENT)
-        if (tag !=null) {
+        if (tag != null) {
             mCurrentFrag = getFragment(tag)
         }
 
@@ -894,6 +923,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
 
     interface RootFragmentListener {
         val numberOfRootFragments: Int
+
         /**
          * Dynamically create the Fragment that will go on the bottom of the stack
          *
