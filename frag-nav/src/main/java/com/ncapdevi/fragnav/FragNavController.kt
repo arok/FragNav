@@ -523,6 +523,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
                 currentFrag?.let {
                     transaction.setMaxLifecycle(it, Lifecycle.State.STARTED)
                 }
+                transaction.addToBackStack(null)
                 dialogFragment.show(transaction, dialogFragment.javaClass.name)
             } catch (e: IllegalStateException) {
                 logError("Could not show dialog", e)
@@ -790,12 +791,7 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
     }
 
     fun getFragmentManagerForDialog(): FragmentManager {
-//        val currentFrag = this.currentFrag
-//        return if (currentFrag?.isAdded == true) {
-//            currentFrag.childFragmentManager
-//        } else {
-            return this.fragmentManger
-//        }
+        return this.fragmentManger
     }
 
     //endregion
