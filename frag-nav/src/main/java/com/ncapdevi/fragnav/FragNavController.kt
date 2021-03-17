@@ -519,7 +519,11 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
             val fragmentManager: FragmentManager = getFragmentManagerForDialog()
             mCurrentDialogFrag = dialogFragment
             try {
-                dialogFragment.show(fragmentManager, dialogFragment.javaClass.name)
+                val transaction = fragmentManager.beginTransaction()
+                currentFrag?.let {
+                    transaction.setMaxLifecycle(it, Lifecycle.State.STARTED)
+                }
+                dialogFragment.show(transaction, dialogFragment.javaClass.name)
             } catch (e: IllegalStateException) {
                 logError("Could not show dialog", e)
                 // Activity was likely destroyed before we had a chance to show, nothing can be done here.
