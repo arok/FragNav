@@ -790,12 +790,12 @@ class FragNavController constructor(private val fragmentManger: FragmentManager,
     }
 
     fun getFragmentManagerForDialog(): FragmentManager {
-        val currentFrag = this.currentFrag
-        return if (currentFrag?.isAdded == true) {
-            currentFrag.childFragmentManager
-        } else {
-            this.fragmentManger
-        }
+//        val currentFrag = this.currentFrag
+//        return if (currentFrag?.isAdded == true) {
+//            currentFrag.childFragmentManager
+//        } else {
+            return this.fragmentManger
+//        }
     }
 
     //endregion
